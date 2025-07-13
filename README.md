@@ -70,6 +70,79 @@ There are about 4,500 localized strings, so this can also be done a little bit
 at a time. Once the translations are in, we can help get the language included
 in the game.
 
+## Local Development with Firebase Emulator
+
+For developers who want to avoid setting up a Google Firebase account, you can use the Firebase Emulator Suite to run a local Firebase Realtime Database.
+
+### Prerequisites
+
+- Node.js v18 (recommended)
+- Firebase CLI tools
+
+### Setup Instructions
+
+1. **Install Firebase CLI globally:**
+   ```bash
+   npm install -g firebase-tools
+   ```
+
+2. **Initialize Firebase in the project (if not already done):**
+   ```bash
+   firebase init database
+   # Select "Use an existing project" and choose any project ID
+   # Or select "Don't set up a default project" for local-only usage
+   ```
+
+3. **Start the Firebase Emulator:**
+   ```bash
+   firebase emulators:start --only database
+   ```
+   
+   This will start a local Firebase Realtime Database on `http://localhost:9000`
+
+4. **Configure your environment:**
+   Create a `.env` file in the project root:
+   ```bash
+   FIREBASE_URL=http://localhost:9000/?ns=duelyst-local
+   FIREBASE_LEGACY_TOKEN=fake-token-for-local-development
+   ```
+
+5. **Build and run the game:**
+   ```bash
+   # Install dependencies (if not already done)
+   yarn install --dev
+   yarn tsc:chroma-js
+   
+   # Build the game with local Firebase URL
+   cross-env FIREBASE_URL=http://localhost:9000/?ns=duelyst-local yarn build
+   
+   # Initialize database
+   docker compose up migrate
+   
+   # Start all services
+   docker compose up
+   ```
+
+6. **Access the game:**
+   Open http://localhost:3000 in your browser
+
+### Firebase Emulator UI
+
+The Firebase Emulator provides a web UI at http://localhost:4000 where you can:
+- View and edit database contents
+- Monitor real-time connections
+- Debug Firebase security rules
+
+### Notes
+
+- The emulator data is ephemeral and will be lost when you stop the emulator
+- For persistent local data, you can export/import emulator data:
+  ```bash
+  firebase emulators:export ./firebase-data
+  firebase emulators:start --import ./firebase-data
+  ```
+- The fake legacy token works for local development but won't work with real Firebase
+
 ## License
 
 OpenDuelyst is licensed under the Creative Commons Zero v1.0 Universal license.
