@@ -70,6 +70,99 @@ There are about 4,500 localized strings, so this can also be done a little bit
 at a time. Once the translations are in, we can help get the language included
 in the game.
 
+## Quick Start (Docker)
+
+The fastest way to get OpenDuelyst running locally:
+
+```bash
+# One-command setup (installs dependencies, builds, and starts everything)
+./scripts/setup-docker-dev.sh
+```
+
+This will:
+- ✅ Install all dependencies
+- ✅ Build the game
+- ✅ Start Firebase Emulator (no Google account needed)
+- ✅ Start all game services
+- ✅ Open the game at http://localhost:3000
+
+## Local Development with Firebase Emulator
+
+For developers who want to avoid setting up a Google Firebase account, you can use the Firebase Emulator Suite to run a local Firebase Realtime Database. **The Docker setup now includes Firebase Emulator automatically!**
+
+### Option 1: Docker Integration (Recommended)
+
+The easiest way is to use the integrated Docker setup:
+
+1. **Build and run everything with Docker:**
+   ```bash
+   # Install dependencies (if not already done)
+   yarn install --dev
+   yarn tsc:chroma-js
+   
+   # Build the game
+   yarn build
+   
+   # Start all services including Firebase Emulator
+   docker compose up
+   ```
+
+2. **Access the services:**
+   - **Game**: http://localhost:3000
+   - **Firebase Emulator UI**: http://localhost:4001
+   - **Firebase Database**: http://localhost:9000
+
+The Docker setup automatically:
+- ✅ Installs Firebase CLI tools
+- ✅ Creates firebase.json configuration
+- ✅ Starts Firebase Emulator with persistent data
+- ✅ Configures all services to use the local emulator
+- ✅ Provides data persistence between restarts
+
+### Option 2: Manual Setup (Alternative)
+
+If you prefer to run Firebase Emulator outside Docker:
+
+1. **Use the automated setup script:**
+   ```bash
+   ./scripts/setup-firebase-emulator.sh
+   ./start-emulator.sh
+   ```
+
+2. **Or install manually:**
+   ```bash
+   npm install -g firebase-tools
+   firebase emulators:start --only database
+   ```
+
+3. **Configure environment:**
+   Create a `.env` file:
+   ```bash
+   FIREBASE_URL=http://localhost:9000/?ns=duelyst-local
+   FIREBASE_LEGACY_TOKEN=fake-token-for-local-development
+   ```
+
+4. **Build and run:**
+   ```bash
+   cross-env FIREBASE_URL=http://localhost:9000/?ns=duelyst-local yarn build
+   docker compose up
+   ```
+
+### Firebase Emulator Features
+
+The Firebase Emulator provides:
+- **Web UI** at http://localhost:4001 for debugging
+- **Real-time database** at http://localhost:9000
+- **Data persistence** - data survives container restarts
+- **No Google account required** - completely local development
+
+### Notes
+
+- Docker setup uses persistent volumes for Firebase data
+- All services automatically connect to the local emulator
+- The fake legacy token works for local development but won't work with real Firebase
+- If you need to reset Firebase data, remove the `firebase-data` Docker volume
+
 ## License
 
 OpenDuelyst is licensed under the Creative Commons Zero v1.0 Universal license.
